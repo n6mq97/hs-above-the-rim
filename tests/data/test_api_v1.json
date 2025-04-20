@@ -1,0 +1,199 @@
+[
+
+  {
+    "description": "Stage 2 #1: Добавление Team в БД",
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/teams",
+      "json": {
+        "short": "PRW",
+        "name": "Prague Wizards"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+          "data": "Team has been added",
+          "success": true
+      }
+    }
+  },
+
+  {
+    "description": "Stage 2 #2: Получение Team из БД",
+    "clearDb": false,
+    "setup": {
+      "teams": [
+        {"ID": 2, "SHORT": "CHG", "NAME": "Chicago Gulls"}
+      ]
+    },
+    "request": {
+      "method": "GET",
+      "url": "/api/v1/teams"
+    },
+    "expected": {
+      "status": 200,
+      "json": {
+          "success": true,
+          "data": {
+              "PRW": "Prague Wizards",
+              "CHG": "Chicago Gulls"
+          }
+      }
+    }
+  },
+
+  {
+    "description": "Stage 3 #1: Добавление Game в БД",
+    "setup": {
+      "teams": [
+        {"ID": 1, "SHORT": "CHW", "NAME": "Chicago Wizards"},
+        {"ID": 2, "SHORT": "PRG", "NAME": "Prague Gulls"}
+      ],
+      "games": [
+        {"ID": 1, "HOME_TEAM_ID": 1, "VISITING_TEAM_ID": 2, "HOME_TEAM_SCORE": 123, "VISITING_TEAM_SCORE": 89}
+      ]
+    },
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/games",
+      "json": {
+        "home_team": "PRG", "visiting_team": "CHW",
+        "home_team_score": 76, "visiting_team_score": 67
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+          "data": "Game has been added",
+          "success": true
+      }
+    }
+  },
+
+  {
+    "description": "Stage 3 #2: Получение Game из БД",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "GET",
+      "url": "/api/v1/games"
+    },
+    "expected": {
+      "status": 200,
+      "json": {
+        "success": true,
+        "data": {
+          "1": "Chicago Wizards 123:89 Prague Gulls",
+          "2": "Prague Gulls 76:67 Chicago Wizards"
+        }
+      }
+    }
+  },
+
+  {
+    "description": "Stage 3 #3: Попытка добавления Game, когда Team с указанным short не существует",
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/games",
+      "json": {
+        "home_team": "PRG", "visiting_team": "CHW",
+        "home_team_score": 76, "visiting_team_score": 67
+      }
+    },
+    "expected": {
+      "status": 400,
+      "json": {"success": false, "data": "Wrong team short"}
+    }
+  },
+
+  {
+    "description": "Stage 4 #1: Получение статистики команды",
+    "setup": {
+      "teams": [
+        {"ID": 1, "SHORT": "CHW", "NAME": "Chicago Wizards"},
+        {"ID": 2, "SHORT": "PRG", "NAME": "Prague Giants"}
+      ],
+      "games": [
+        {"ID": 1, "HOME_TEAM_ID": 1, "VISITING_TEAM_ID": 2, "HOME_TEAM_SCORE": 0, "VISITING_TEAM_SCORE": 1},
+        {"ID": 2, "HOME_TEAM_ID": 1, "VISITING_TEAM_ID": 2, "HOME_TEAM_SCORE": 1, "VISITING_TEAM_SCORE": 0},
+        {"ID": 3, "HOME_TEAM_ID": 1, "VISITING_TEAM_ID": 2, "HOME_TEAM_SCORE": 1, "VISITING_TEAM_SCORE": 0},
+        {"ID": 4, "HOME_TEAM_ID": 1, "VISITING_TEAM_ID": 2, "HOME_TEAM_SCORE": 1, "VISITING_TEAM_SCORE": 0}
+      ]
+    },
+    "request": {
+      "method": "GET",
+      "url": "/api/v1/team/PRG"
+    },
+    "expected": {
+      "status": 200,
+      "json": {
+        "success": true,
+        "data": {
+          "name": "Prague Giants",
+          "short": "PRG",
+          "win": 1,
+          "lost": 3
+        }
+      }
+    }
+  },
+
+  {
+    "description": "Stage 4 #2: Попытка получить статистику для команды, которой не существует",
+    "setup": {},
+    "request": {
+      "method": "GET",
+      "url": "/api/v1/team/DDD"
+    },
+    "expected": {
+      "status": 400,
+      "json": {
+          "success": false,
+          "data": "There is no team DDD"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 4 #3.1: Попытка добавить Team с невалидным short",
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/teams",
+      "json": {
+        "short": "PRw",
+        "name": "Prague Wizards"
+      }
+    },
+    "expected": {
+      "status": 400,
+      "json": {
+        "success": false,
+        "data": "Wrong short format"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 4 #3.2: Попытка добавить Team с невалидным short",
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v1/teams",
+      "json": {
+        "short": "PRWZ",
+        "name": "Prague Wizards"
+      }
+    },
+    "expected": {
+      "status": 400,
+      "json": {
+        "success": false,
+        "data": "Wrong short format"
+      }
+    }
+  }
+]

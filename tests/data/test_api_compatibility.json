@@ -1,0 +1,85 @@
+[
+    {
+    "description": "Stage 5 #comp1: Добавление Game в БД через API v2",
+    "setup": {
+      "teams": [
+        {"ID": 1, "SHORT": "CHW", "NAME": "Chicago Wizards"},
+        {"ID": 2, "SHORT": "PRG", "NAME": "Prague Gulls"}
+      ]
+    },
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games",
+      "json": {
+        "home_team": "PRG",
+        "visiting_team": "CHW"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+          "data": 1,
+          "success": true
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #comp2: Успешное добавление Quarter в БД",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games/1",
+      "json": {
+        "quarters": "12:20"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+        "success": true,
+        "data": "Score updated"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #comp2: Успешное добавление Quarter в БД (дополнительные данные для след. кейса)",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games/1",
+      "json": {
+        "quarters": "21:12"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+        "success": true,
+        "data": "Score updated"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #comp3: Получение Game из БД v1",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "GET",
+      "url": "/api/v1/games"
+    },
+    "expected": {
+      "status": 200,
+      "json": {
+        "success": true,
+        "data": {
+          "1": "Prague Gulls 33:32 Chicago Wizards"
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,5 @@
+.env
+instance/db.sqlite3
+test/
+tests.py
+.DS_Store

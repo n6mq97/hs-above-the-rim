@@ -1,0 +1,105 @@
+[
+
+  {
+    "description": "Stage 5 #1: Добавление Game в БД через API v2",
+    "setup": {
+      "teams": [
+        {"ID": 1, "SHORT": "CHW", "NAME": "Chicago Wizards"},
+        {"ID": 2, "SHORT": "PRG", "NAME": "Prague Gulls"}
+      ]
+    },
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games",
+      "json": {
+        "home_team": "PRG",
+        "visiting_team": "CHW"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+          "data": 1,
+          "success": true
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #2: Успешное добавление Quarter в БД",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games/1",
+      "json": {
+        "quarters": "12:20"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+        "success": true,
+        "data": "Score updated"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #2: Успешное добавление Quarter в БД (дополнительные данные для след. кейса)",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games/1",
+      "json": {
+        "quarters": "21:12"
+      }
+    },
+    "expected": {
+      "status": 201,
+      "json": {
+        "success": true,
+        "data": "Score updated"
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #3: Возврат игры с результатами четвертей",
+    "clearDb": false,
+    "setup": {},
+    "request": {
+      "method": "GET",
+      "url": "/api/v2/games"
+    },
+    "expected": {
+      "status": 200,
+      "json": {
+        "success": true,
+        "data": {
+          "1": "Prague Gulls 33:32 Chicago Wizards (12:20,21:12)"
+        }
+      }
+    }
+  },
+
+  {
+    "description": "Stage 5 #4: Попытка добавления Quarter для несуществующего game_id",
+    "setup": {},
+    "request": {
+      "method": "POST",
+      "url": "/api/v2/games/667",
+      "json": {
+        "quarters": "21:12"
+      }
+    },
+    "expected": {
+      "status": 400,
+      "json": {
+        "success": false,
+        "data": "There is no game with id 667"
+      }
+    }
+  }
+]
